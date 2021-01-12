@@ -5,9 +5,7 @@ import math
 player_positions = set()
 cpu_positions = set()
 
-# Start a game of TicTacToe until there is a winner or a tie
-
-
+## Start a game of TicTacToe until there is a winner or a tie
 def playTicTacToe():
     global player_positions
     global cpu_positions
@@ -59,19 +57,16 @@ def playTicTacToe():
             print("Goodbye!")
             break
 
-# Print the Game Board in console
 
-
+## Print the Game Board in console
 def print_board(board):
     for line in board:
         for char in line:
             print(char, end="")
         print()
 
-# Check if a position is free and between 1-9,
-# return False otherwise
-
-
+## Check if a position is free and between 1-9,
+## return False otherwise
 def valid_pos(pos):
     if math.isnan(pos):
         print("Please input a valid number.")
@@ -84,9 +79,7 @@ def valid_pos(pos):
         return False
     return True
 
-# Draw the played piece on the board
-
-
+## Draw the played piece on the board
 def place_piece(board, pos, user):
     piece = " "
     if user == "player":
@@ -115,9 +108,7 @@ def place_piece(board, pos, user):
     elif pos == 9:
         board[4][4] = piece
 
-# Check whether the player or the computer won
-
-
+## Check whether the player or the computer won
 def check_win():
 
     # Possible ways to win
@@ -149,7 +140,7 @@ def check_win():
 
     return False
 
-
+## Ask user to play again or not
 def replay():
     play_again = input("Do you want to play again? [Y/N]: ")
     if play_again == "Y" or play_again == "y":
@@ -163,13 +154,3 @@ def replay():
 
 if __name__ == "__main__":
     playTicTacToe()
-
-# test = TicTacToe()
-# test.main()
-# while True:
-#     play_again = input("Do you want to play again? [Y/N]: ")
-#     if play_again == "N":
-#         print("Goodbye!")
-#         break
-#     else:
-#         test.playTicTacToe()
