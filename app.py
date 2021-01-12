@@ -1,6 +1,6 @@
 import random
 import math
-
+import time
 
 player_positions = set()
 cpu_positions = set()
@@ -16,20 +16,17 @@ def playTicTacToe():
         ["-", "+", "-", "+", "-"],
         [" ", "|", " ", "|", " "],
         ["-", "+", "-", "+", "-"],
-        [" ", "|", " ", "|", " "]
+        [" ", "|", " ", "|", " "],
     ]
+    print()
     print_board(board)
 
-    while(True):
+    while True:
         # Player's turn to play
-        print()
-        user_pos = int(input(
-            "Where do you want to place 'X'? Enter position [1-9]: "))
-
+        print("\nIt's your turn!")
+        user_pos = ask_user_move()
         while not valid_pos(user_pos):
-            print()
-            user_pos = int(input(
-                "Where do you want to place 'X'? Enter position [1-9]: "))
+            user_pos = ask_user_move()
 
         place_piece(board, user_pos, "player")
         print_board(board)
@@ -38,11 +35,13 @@ def playTicTacToe():
                 player_positions = set()
                 cpu_positions = set()
                 playTicTacToe()
-            print("Goodbye!")
-            break
+            else:
+                print("Goodbye!")
+                break
 
         # CPU's turn to play
         print("CPU is playing...")
+        time.sleep(1)
         cpu_pos = random.randint(1, 9)
         while not valid_pos(cpu_pos):
             cpu_pos = random.randint(1, 9)
@@ -54,8 +53,9 @@ def playTicTacToe():
                 player_positions = set()
                 cpu_positions = set()
                 playTicTacToe()
-            print("Goodbye!")
-            break
+            else:
+                print("Goodbye!")
+                break
 
 
 ## Print the Game Board in console
@@ -65,19 +65,30 @@ def print_board(board):
             print(char, end="")
         print()
 
+
+## Ask the user to play and check if his answer is numeric
+def ask_user_move():
+    answer = input("Where do you want to place 'X'? Enter position [1-9]: ")
+    if not answer.isnumeric():
+        print("\nPlease enter a numeric value.")
+        answer = ask_user_move()
+    return int(answer)
+
+
 ## Check if a position is free and between 1-9,
 ## return False otherwise
 def valid_pos(pos):
     if math.isnan(pos):
-        print("Please input a valid number.")
+        print("\nPlease input a valid number.")
         return False
     elif pos in player_positions or pos in cpu_positions:
         print("Position taken.")
         return False
     elif pos < 1 or pos > 9:
-        print("Please respect the position boundaries.")
+        print("\nPlease respect the position boundaries.")
         return False
     return True
+
 
 ## Draw the played piece on the board
 def place_piece(board, pos, user):
@@ -107,6 +118,7 @@ def place_piece(board, pos, user):
         board[4][2] = piece
     elif pos == 9:
         board[4][4] = piece
+
 
 ## Check whether the player or the computer won
 def check_win():
@@ -139,6 +151,7 @@ def check_win():
         return True
 
     return False
+
 
 ## Ask user to play again or not
 def replay():
