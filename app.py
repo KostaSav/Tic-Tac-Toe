@@ -1,14 +1,95 @@
 import random
 import math
 import time
+from graphics import *
 
 player_positions = set()
 cpu_positions = set()
+size = 1000
+margin = 0.1 * size
+finished = False
+
+## Draw the board using graphics.py,
+## with its horizontal and vertical lines.
+## Return the board so that other methods can draw on it
+def draw_board():
+    win = GraphWin("Tic Tac Toe", size, size)
+    margin = 0.1 * size
+    hor1 = Line(
+        Point(margin, (size / 3)),
+        Point(size - margin, (size / 3)),
+    )
+    hor2 = Line(
+        Point(margin, (2 * size / 3)),
+        Point(size - margin, (2 * size / 3)),
+    )
+    ver1 = Line(
+        Point((size / 3), margin),
+        Point((size / 3), size - margin),
+    )
+    ver2 = Line(
+        Point((2 * size / 3), margin),
+        Point((2 * size / 3), size - margin),
+    )
+    hor1.draw(win)
+    hor2.draw(win)
+    ver1.draw(win)
+    ver2.draw(win)
+    # win.getMouse()  # Pause to view result
+    # win.close()  # Close window when done
+    return win
+
+
+## Draw a X or a O in each turn,
+## using the board returned from draw_board()
+def draw_piece(board, pos, turn):
+    if pos == 1:
+        center = Point((margin + size / 3) / 2, (margin + size / 3) / 2)
+    elif pos == 2:
+        center = Point(size / 2, (margin + size / 3) / 2)
+    elif pos == 3:
+        center = Point((size - margin + 2 * size / 3) / 2, (margin + size / 3) / 2)
+    elif pos == 4:
+        center = Point((margin + size / 3) / 2, size / 2)
+    elif pos == 5:
+        center = Point(size / 2, size / 2)
+    elif pos == 6:
+        center = Point((size - margin + 2 * size / 3) / 2, size / 2)
+    elif pos == 7:
+        center = Point((margin + size / 3) / 2, (size - margin + 2 * size / 3) / 2)
+    elif pos == 8:
+        center = Point(size / 2, (size - margin + 2 * size / 3) / 2)
+    elif pos == 9:
+        center = Point(
+            (size - margin + 2 * size / 3) / 2, (size - margin + 2 * size / 3) / 2
+        )
+
+    if turn == "cpu":
+        nought = Circle(center, margin)
+        nought.setOutline("blue")
+        nought.setWidth(0.2 * margin)
+        nought.draw(board)
+    else:
+        line1 = Line(
+            Point(center.getX() - margin, center.getY() - margin),
+            Point(center.getX() + margin, center.getY() + margin),
+        )
+        line2 = Line(
+            Point(center.getX() + margin, center.getY() - margin),
+            Point(center.getX() - margin, center.getY() + margin),
+        )
+        cross = [line1, line2]
+        for line in cross:
+            line.setOutline("red")
+            line.setWidth(0.2 * margin)
+            line.draw(board)
+
 
 ## Start a game of TicTacToe until there is a winner or a tie
 def playTicTacToe():
     global player_positions
     global cpu_positions
+    global finished
 
     # Initialize the Game Board and print it in console
     board = [
@@ -20,8 +101,12 @@ def playTicTacToe():
     ]
     print()
     print_board(board)
+    graphic_board = draw_board()
 
     while True:
+        if finished:
+            break
+
         # Player's turn to play
         print("\nIt's your turn!")
         user_pos = ask_user_move()
@@ -29,15 +114,20 @@ def playTicTacToe():
             user_pos = ask_user_move()
 
         place_piece(board, user_pos, "player")
+        draw_piece(graphic_board, user_pos, "player")
         print_board(board)
         if check_win():
             if replay():
+                graphic_board.close()
                 player_positions = set()
                 cpu_positions = set()
                 playTicTacToe()
             else:
+                finished = True
+                graphic_board.close()
                 print("Goodbye!")
-                break
+        if finished:
+            break
 
         # CPU's turn to play
         print("CPU is playing...")
@@ -45,17 +135,22 @@ def playTicTacToe():
         cpu_pos = random.randint(1, 9)
         while not valid_pos(cpu_pos):
             cpu_pos = random.randint(1, 9)
-        place_piece(board, cpu_pos, "cpu")
-        print_board(board)
 
+        place_piece(board, cpu_pos, "cpu")
+        draw_piece(graphic_board, cpu_pos, "cpu")
+        print_board(board)
         if check_win():
             if replay():
+                graphic_board.close()
                 player_positions = set()
                 cpu_positions = set()
                 playTicTacToe()
             else:
+                finished = True
+                graphic_board.close()
                 print("Goodbye!")
-                break
+        if finished:
+            break
 
 
 ## Print the Game Board in console
