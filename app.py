@@ -1,92 +1,152 @@
+########## Imports ##########
 import random
 import math
 import time
-from graphics import *
+import json
+import interface
 
+########## Global Variables ##########
 player_positions = set()
 cpu_positions = set()
-size = 1000
-margin = 0.1 * size
 finished = False
+scores = {}
 
-## Draw the board using graphics.py,
-## with its horizontal and vertical lines.
-## Return the board so that other methods can draw on it
-def draw_board():
-    win = GraphWin("Tic Tac Toe", size, size)
-    margin = 0.1 * size
-    hor1 = Line(
-        Point(margin, (size / 3)),
-        Point(size - margin, (size / 3)),
-    )
-    hor2 = Line(
-        Point(margin, (2 * size / 3)),
-        Point(size - margin, (2 * size / 3)),
-    )
-    ver1 = Line(
-        Point((size / 3), margin),
-        Point((size / 3), size - margin),
-    )
-    ver2 = Line(
-        Point((2 * size / 3), margin),
-        Point((2 * size / 3), size - margin),
-    )
-    hor1.draw(win)
-    hor2.draw(win)
-    ver1.draw(win)
-    ver2.draw(win)
-    # win.getMouse()  # Pause to view result
-    # win.close()  # Close window when done
-    return win
-
-
-## Draw a X or a O in each turn,
-## using the board returned from draw_board()
-def draw_piece(board, pos, turn):
-    if pos == 1:
-        center = Point((margin + size / 3) / 2, (margin + size / 3) / 2)
-    elif pos == 2:
-        center = Point(size / 2, (margin + size / 3) / 2)
-    elif pos == 3:
-        center = Point((size - margin + 2 * size / 3) / 2, (margin + size / 3) / 2)
-    elif pos == 4:
-        center = Point((margin + size / 3) / 2, size / 2)
-    elif pos == 5:
-        center = Point(size / 2, size / 2)
-    elif pos == 6:
-        center = Point((size - margin + 2 * size / 3) / 2, size / 2)
-    elif pos == 7:
-        center = Point((margin + size / 3) / 2, (size - margin + 2 * size / 3) / 2)
-    elif pos == 8:
-        center = Point(size / 2, (size - margin + 2 * size / 3) / 2)
-    elif pos == 9:
-        center = Point(
-            (size - margin + 2 * size / 3) / 2, (size - margin + 2 * size / 3) / 2
-        )
-
-    if turn == "cpu":
-        nought = Circle(center, margin)
-        nought.setOutline("blue")
-        nought.setWidth(0.2 * margin)
-        nought.draw(board)
-    else:
-        line1 = Line(
-            Point(center.getX() - margin, center.getY() - margin),
-            Point(center.getX() + margin, center.getY() + margin),
-        )
-        line2 = Line(
-            Point(center.getX() + margin, center.getY() - margin),
-            Point(center.getX() - margin, center.getY() + margin),
-        )
-        cross = [line1, line2]
-        for line in cross:
-            line.setOutline("red")
-            line.setWidth(0.2 * margin)
-            line.draw(board)
+########## Functions ##########
 
 
 ## Start a game of TicTacToe until there is a winner or a tie
-def playTicTacToe():
+def select_mode():
+    def ask_user_opponent():
+        opponent_choice = input(
+            "\nPlease choose your opponent.\n1 - Local Player\n2 - Computer\nYour choice: "
+        )
+        if not (opponent_choice == "1" or opponent_choice == "2"):
+            print("Please choose a valid opponent option...")
+            opponent_choice = ask_user_opponent()
+        if opponent_choice == "1":
+            playTicTacToe()
+        else:
+            playTicTacToe(opponent="computer", difficulty=ask_user_difficulty())
+
+    def ask_user_difficulty():
+        difficulty_choice = input(
+            "\nPlease select difficulty:\n1 - Easy\n2 - Medium\n3 - Hard\nYour choice: "
+        )
+        if not difficulty_choice in ["1", "2", "3"]:
+            print("Please choose a valid diffuculty option...")
+            difficulty_choice = ask_user_difficulty()
+        if difficulty_choice == "1":
+            return "easy"
+        elif difficulty_choice == "2":
+            return "medium"
+        else:
+            return "hard"
+
+    ask_user_opponent()
+
+
+## The computer makes a move, according to the selected difficulty
+def play_cpu_turn(difficulty):
+
+    # In easy mode, it randomly selects an empty square
+    if difficulty == "easy":
+        cpu_pos = random.randint(1, 9)
+        while not is_valid_pos(cpu_pos):
+            cpu_pos = random.randint(1, 9)
+        return cpu_pos
+
+    # In medium mode, it tries to block the user from filling three consequtive squares
+    elif difficulty == "medium":
+        count = 0  # number of consecutive X
+        empty = 0  # position of an empty square
+
+        # Check each row for incomplete tictactoes
+        for row in range(1, 7 + 1, 3):
+            for col in range(row, row + 3):
+                if is_valid_pos(col):
+                    empty = col
+                elif col in player_positions:
+                    count += 1
+                else:
+                    continue
+            if count == 2 and empty != 0:
+                return empty
+            else:
+                count = 0
+                empty = 0
+
+        # Check each column for incomplete tictactoes
+        for col in range(1, 3 + 1):
+            for row in range(col, col + 7, 3):
+                if is_valid_pos(row):
+                    empty = row
+                elif row in player_positions:
+                    count += 1
+                else:
+                    continue
+            if count == 2 and empty != 0:
+                return empty
+            else:
+                count = 0
+                empty = 0
+
+        # Check diagonal from up-left for an incomplete tictactoe
+        for diag in range(1, 9 + 1, 4):
+            if is_valid_pos(diag):
+                empty = diag
+            elif diag in player_positions:
+                count += 1
+            else:
+                continue
+        if count == 2 and empty != 0:
+            return empty
+        else:
+            count = 0
+            empty = 0
+
+        # Check diagonal from up-right for an incomplete tictactoe
+        for diag in range(3, 7 + 1, 2):
+            if is_valid_pos(diag):
+                empty = diag
+            elif diag in player_positions:
+                count += 1
+            else:
+                continue
+        if count == 2 and empty != 0:
+            return empty
+        else:
+            count = 0
+            empty = 0
+
+        # If no possible player tictactoes are found, select the center square
+        if 5 not in player_positions and 5 not in cpu_positions:
+            return 5
+        else:
+            # Corner squares have higher chances to form a tictactoe
+            corner_squares = [1, 3, 7, 9]
+            empty_squares = []
+            for square in corner_squares:
+                if square not in player_positions and square not in cpu_positions:
+                    empty_squares.append(square)
+            if empty_squares:
+                return random.choice(empty_squares)
+
+            # Last ones in priority are the middle squares
+            middle_squares = [2, 4, 6, 8]
+            empty_squares = []
+            for square in middle_squares:
+                if square not in player_positions and square not in cpu_positions:
+                    empty_squares.append(square)
+            if empty_squares:
+                return random.choice(empty_squares)
+
+    else:
+        # TODO
+        pass
+
+
+## Start a game of TicTacToe until there is a winner or a tie
+def playTicTacToe(opponent="cpu", difficulty="easy"):
     global player_positions
     global cpu_positions
     global finished
@@ -101,7 +161,7 @@ def playTicTacToe():
     ]
     print()
     print_board(board)
-    graphic_board = draw_board()
+    graphic_board = interface.draw_board()
 
     while True:
         if finished:
@@ -110,18 +170,18 @@ def playTicTacToe():
         # Player's turn to play
         print("\nIt's your turn!")
         user_pos = ask_user_move()
-        while not valid_pos(user_pos):
+        while not is_valid_pos(user_pos):
             user_pos = ask_user_move()
 
         place_piece(board, user_pos, "player")
-        draw_piece(graphic_board, user_pos, "player")
+        interface.draw_piece(graphic_board, user_pos, "player")
         print_board(board)
         if check_win():
             if replay():
                 graphic_board.close()
                 player_positions = set()
                 cpu_positions = set()
-                playTicTacToe()
+                select_mode()
             else:
                 finished = True
                 graphic_board.close()
@@ -132,19 +192,17 @@ def playTicTacToe():
         # CPU's turn to play
         print("CPU is playing...")
         time.sleep(1)
-        cpu_pos = random.randint(1, 9)
-        while not valid_pos(cpu_pos):
-            cpu_pos = random.randint(1, 9)
 
+        cpu_pos = play_cpu_turn(difficulty)
         place_piece(board, cpu_pos, "cpu")
-        draw_piece(graphic_board, cpu_pos, "cpu")
+        interface.draw_piece(graphic_board, cpu_pos, "cpu")
         print_board(board)
         if check_win():
             if replay():
                 graphic_board.close()
                 player_positions = set()
                 cpu_positions = set()
-                playTicTacToe()
+                select_mode()
             else:
                 finished = True
                 graphic_board.close()
@@ -172,7 +230,7 @@ def ask_user_move():
 
 ## Check if a position is free and between 1-9,
 ## return False otherwise
-def valid_pos(pos):
+def is_valid_pos(pos):
     if math.isnan(pos):
         print("\nPlease input a valid number.")
         return False
@@ -261,4 +319,4 @@ def replay():
 
 
 if __name__ == "__main__":
-    playTicTacToe()
+    select_mode()
