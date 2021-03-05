@@ -1,3 +1,4 @@
 .vscode
 Devpost image.jpg
 __pycache__
+*.json

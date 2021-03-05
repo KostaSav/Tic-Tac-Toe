@@ -3,19 +3,37 @@ import random
 import math
 import time
 import json
+import datetime
 import interface
 
 ########## Global Variables ##########
 player_positions = set()
 cpu_positions = set()
 finished = False
-scores = {}
+scores = []
 
 ########## Functions ##########
-
-
 ## Start a game of TicTacToe until there is a winner or a tie
-def select_mode():
+def init_game(user_name):
+    username = ""
+    opponent = ""
+    difficulty = ""
+
+    # Player username
+    def ask_user_name():
+        if user_name == "default":
+            name = input(
+                "\nWhat is your name?\n[3-10 characters only, alphabetic or numeric]: "
+            )
+            if not name.isalnum() or len(name) < 3 or len(name) > 10:
+                print("Please respect the naming rules...")
+                name = ask_user_name()
+            username = name
+        else:
+            username = user_name
+        return username
+
+    # PvP or PvE
     def ask_user_opponent():
         opponent_choice = input(
             "\nPlease choose your opponent.\n1 - Local Player\n2 - Computer\nYour choice: "
@@ -24,10 +42,12 @@ def select_mode():
             print("Please choose a valid opponent option...")
             opponent_choice = ask_user_opponent()
         if opponent_choice == "1":
-            playTicTacToe()
+            opponent = "local"
         else:
-            playTicTacToe(opponent="computer", difficulty=ask_user_difficulty())
+            opponent = "computer"
+        return opponent
 
+    # For PvE --> easy, medium, hard
     def ask_user_difficulty():
         difficulty_choice = input(
             "\nPlease select difficulty:\n1 - Easy\n2 - Medium\n3 - Hard\nYour choice: "
@@ -36,13 +56,34 @@ def select_mode():
             print("Please choose a valid diffuculty option...")
             difficulty_choice = ask_user_difficulty()
         if difficulty_choice == "1":
-            return "easy"
+            difficulty = "easy"
         elif difficulty_choice == "2":
-            return "medium"
+            difficulty = "medium"
         else:
-            return "hard"
+            dificulty = "hard"
+        return difficulty
 
-    ask_user_opponent()
+    username = ask_user_name()
+    opponent = ask_user_opponent()
+    if opponent == "computer":
+        difficulty = ask_user_difficulty()
+    return username, opponent, difficulty
+
+
+## Load the past game scores from the locally saved json files
+def load_scores(username, opponent, difficulty):
+    global scores
+    try:
+        with open(f"scores_{username}_{opponent}_{difficulty}.json") as f:
+            scores = json.load(f)
+    except FileNotFoundError:
+        scores = []
+
+
+# Save the game's score to a json file
+def save_scores(username, opponent, difficulty):
+    with open(f"scores_{username}_{opponent}_{difficulty}.json", "w") as f:
+        json.dump(scores, f, indent=4)
 
 
 ## The computer makes a move, according to the selected difficulty
@@ -146,10 +187,14 @@ def play_cpu_turn(difficulty):
 
 
 ## Start a game of TicTacToe until there is a winner or a tie
-def playTicTacToe(opponent="cpu", difficulty="easy"):
+def playTicTacToe(user_name="default"):
     global player_positions
     global cpu_positions
     global finished
+
+    username, opponent, difficulty = init_game(user_name)
+
+    load_scores(username, opponent, difficulty)
 
     # Initialize the Game Board and print it in console
     board = [
@@ -177,11 +222,12 @@ def playTicTacToe(opponent="cpu", difficulty="easy"):
         interface.draw_piece(graphic_board, user_pos, "player")
         print_board(board)
         if check_win():
+            save_scores(username, opponent, difficulty)
             if replay():
                 graphic_board.close()
                 player_positions = set()
                 cpu_positions = set()
-                select_mode()
+                playTicTacToe(username)
             else:
                 finished = True
                 graphic_board.close()
@@ -198,11 +244,12 @@ def playTicTacToe(opponent="cpu", difficulty="easy"):
         interface.draw_piece(graphic_board, cpu_pos, "cpu")
         print_board(board)
         if check_win():
+            save_scores(username, opponent, difficulty)
             if replay():
                 graphic_board.close()
                 player_positions = set()
                 cpu_positions = set()
-                select_mode()
+                playTicTacToe(username)
             else:
                 finished = True
                 graphic_board.close()
@@ -292,15 +339,32 @@ def check_win():
         if set(win).issubset(player_positions):
             print()
             print("Congratulations, you won!")
+            scores.append(
+                {
+                    "timestamp": str(datetime.datetime.now()),
+                    "Player_1": 1,
+                    "Computer": 0,
+                }
+            )
             return True
         elif set(win).issubset(cpu_positions):
             print()
             print("Better luck next time :(")
+            scores.append(
+                {
+                    "timestamp": str(datetime.datetime.now()),
+                    "Player_1": 0,
+                    "Computer": 1,
+                }
+            )
             return True
 
     if len(player_positions) + len(cpu_positions) == 9:
         print()
         print("It's a tie")
+        scores.append(
+            {"timestamp": str(datetime.datetime.now()), "Player_1": 0, "Computer": 0}
+        )
         return True
 
     return False
@@ -315,8 +379,8 @@ def replay():
         return False
     else:
         print("Please answer [Y/y] to play again or [N/n] to exit...")
-        replay()
+        return replay()
 
 
 if __name__ == "__main__":
-    select_mode()
+    playTicTacToe()
