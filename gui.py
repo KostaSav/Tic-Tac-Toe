@@ -2,7 +2,7 @@
 from graphics import *
 
 ########## Global Variables ##########
-size = 1000
+size = 500
 margin = 0.1 * size
 
 ## Draw the board using graphics.py,
