@@ -60,12 +60,12 @@ def draw_piece(board, pos, turn):
             (size - margin + 2 * size / 3) / 2, (size - margin + 2 * size / 3) / 2
         )
 
-    if turn == "cpu":
+    if turn == "cpu" or turn == "player_2":
         nought = Circle(center, margin)
         nought.setOutline("blue")
         nought.setWidth(0.2 * margin)
         nought.draw(board)
-    else:
+    elif turn == "player_1":
         line1 = Line(
             Point(center.getX() - margin, center.getY() - margin),
             Point(center.getX() + margin, center.getY() + margin),

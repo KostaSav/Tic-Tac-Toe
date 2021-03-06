@@ -10,7 +10,11 @@ def is_valid_pos(pos):
     if math.isnan(pos):
         print("\nPlease input a valid number.")
         return False
-    elif pos in config.player_positions or pos in config.cpu_positions:
+    elif (
+        pos in config.player1_positions
+        or pos in config.player2_positions
+        or pos in config.cpu_positions
+    ):
         print("Position taken.")
         return False
     elif pos < 1 or pos > 9:
@@ -20,7 +24,7 @@ def is_valid_pos(pos):
 
 
 ## Check whether the player or the computer won
-def check_win():
+def check_win(opponent):
 
     # Possible ways to win
     row1 = [1, 2, 3]
@@ -35,34 +39,35 @@ def check_win():
     wins = [row1, row2, row3, col1, col2, col3, diag1, diag2]
 
     for win in wins:
-        if set(win).issubset(config.player_positions):
-            print()
-            print("Congratulations, you won!")
+        if set(win).issubset(config.player1_positions):
             storage.scores.append(
                 {
                     "timestamp": str(datetime.datetime.now()),
                     "Player_1": 1,
-                    "Computer": 0,
+                    opponent: 0,
                 }
             )
             return True
-        elif set(win).issubset(config.cpu_positions):
-            print()
-            print("Better luck next time :(")
+        elif set(win).issubset(config.player2_positions) or set(win).issubset(
+            config.cpu_positions
+        ):
             storage.scores.append(
                 {
                     "timestamp": str(datetime.datetime.now()),
                     "Player_1": 0,
-                    "Computer": 1,
+                    opponent: 1,
                 }
             )
             return True
 
-    if len(config.player_positions) + len(config.cpu_positions) == 9:
+    if (
+        len(config.player1_positions) + len(config.cpu_positions) == 9
+        or len(config.player1_positions) + len(config.player2_positions) == 9
+    ):
         print()
         print("It's a tie")
         storage.scores.append(
-            {"timestamp": str(datetime.datetime.now()), "Player_1": 0, "Computer": 0}
+            {"timestamp": str(datetime.datetime.now()), "Player_1": 0, opponent: 0}
         )
         return True
 

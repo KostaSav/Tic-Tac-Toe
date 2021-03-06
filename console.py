@@ -21,9 +21,12 @@ def print_board():
 ## Draw the played piece on the board
 def place_piece(pos, user):
     piece = " "
-    if user == "player":
+    if user == "player_1":
         piece = "X"
-        config.player_positions.add(pos)
+        config.player1_positions.add(pos)
+    elif user == "player_2":
+        piece = "O"
+        config.player2_positions.add(pos)
     elif user == "cpu":
         piece = "O"
         config.cpu_positions.add(pos)

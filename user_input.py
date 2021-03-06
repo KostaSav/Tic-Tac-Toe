@@ -1,22 +1,22 @@
+# Player username
+def ask_user_name(username):
+    if username == "1" or username == "2":
+        name = input(
+            f"\n[PLAYER {username}] What is your name?\n(3-10 characters only, alphabetic or numeric): "
+        )
+        if not name.isalnum() or len(name) < 3 or len(name) > 10:
+            print("Please respect the naming rules...")
+            name = ask_user_name()
+        username = name
+    else:
+        username = username
+    return username
+
+
 ## Start a game of TicTacToe until there is a winner or a tie
-def init_game(user_name):
-    username = ""
+def init_game():
     opponent = ""
     difficulty = ""
-
-    # Player username
-    def ask_user_name():
-        if user_name == "default":
-            name = input(
-                "\nWhat is your name?\n[3-10 characters only, alphabetic or numeric]: "
-            )
-            if not name.isalnum() or len(name) < 3 or len(name) > 10:
-                print("Please respect the naming rules...")
-                name = ask_user_name()
-            username = name
-        else:
-            username = user_name
-        return username
 
     # PvP or PvE
     def ask_user_opponent():
@@ -48,16 +48,15 @@ def init_game(user_name):
             dificulty = "hard"
         return difficulty
 
-    username = ask_user_name()
     opponent = ask_user_opponent()
     if opponent == "computer":
         difficulty = ask_user_difficulty()
-    return username, opponent, difficulty
+    return opponent, difficulty
 
 
 ## Ask the user to play and check if his answer is numeric
-def ask_user_move():
-    answer = input("Where do you want to place 'X'? Enter position [1-9]: ")
+def ask_user_move(piece):
+    answer = input(f"Where do you want to place {piece}? Enter position [1-9]: ")
     if not answer.isnumeric():
         print("\nPlease enter a numeric value.")
         answer = ask_user_move()

@@ -18,8 +18,9 @@ pip install graphics.py
 
 1. [x] fix replay
 2. [x] add graphics
-3. [ ] add mouse interaction
-4. [ ] implement "hard" mode
-5. [ ] implement PVP mode
-6. [x] save scores using json
+3. [x] save scores using json
+4. [x] implement PVP mode
+5. [ ] add mouse interaction
+6. [ ] implement "hard" mode
 7. [ ] eliminate global variables
+8. [ ] introduce classes
