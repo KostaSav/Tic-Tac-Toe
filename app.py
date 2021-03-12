@@ -140,7 +140,7 @@ def playTicTacToe(first_player="1", second_player="2"):
         console.place_piece(user_pos, "player_1")
         gui.draw_piece(graphic_board, user_pos, "player_1")
         console.print_board()
-        if logic.check_win(opponent_name):
+        if logic.check_win(username, opponent_name):
             if opponent == "computer":
                 print("Congratulations, you won!")
             else:
@@ -175,7 +175,7 @@ def playTicTacToe(first_player="1", second_player="2"):
             gui.draw_piece(graphic_board, user_pos, "player_2")
             console.print_board()
 
-        if logic.check_win(opponent_name):
+        if logic.check_win(username, opponent_name):
             if opponent == "computer":
                 print("Better luck next time...")
             else:

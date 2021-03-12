@@ -24,7 +24,7 @@ def is_valid_pos(pos):
 
 
 ## Check whether the player or the computer won
-def check_win(opponent):
+def check_win(username, opponent_name):
 
     # Possible ways to win
     row1 = [1, 2, 3]
@@ -43,8 +43,8 @@ def check_win(opponent):
             storage.scores.append(
                 {
                     "timestamp": str(datetime.datetime.now()),
-                    "Player_1": 1,
-                    opponent: 0,
+                    username: 1,
+                    opponent_name: 0,
                 }
             )
             return True
@@ -54,8 +54,8 @@ def check_win(opponent):
             storage.scores.append(
                 {
                     "timestamp": str(datetime.datetime.now()),
-                    "Player_1": 0,
-                    opponent: 1,
+                    username: 0,
+                    opponent_name: 1,
                 }
             )
             return True
@@ -67,7 +67,7 @@ def check_win(opponent):
         print()
         print("It's a tie")
         storage.scores.append(
-            {"timestamp": str(datetime.datetime.now()), "Player_1": 0, opponent: 0}
+            {"timestamp": str(datetime.datetime.now()), username: 0, opponent_name: 0}
         )
         return True
 
