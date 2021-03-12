@@ -8,9 +8,6 @@ import console
 import storage
 import logic
 
-########## Global Variables ##########
-finished = False
-
 
 ########## Functions ##########
 ## The computer makes a move, according to the selected difficulty
@@ -115,7 +112,6 @@ def play_cpu_turn(difficulty):
 
 ## Start a game of TicTacToe until there is a winner or a tie
 def playTicTacToe(first_player="1", second_player="2"):
-    global finished
 
     username = user_input.ask_user_name(first_player)
     opponent, difficulty = user_input.init_game()
@@ -131,8 +127,6 @@ def playTicTacToe(first_player="1", second_player="2"):
     graphic_board = gui.draw_board()
 
     while True:
-        if finished:
-            break
 
         # Player 1's turn to play
         if opponent == "computer":
@@ -158,13 +152,11 @@ def playTicTacToe(first_player="1", second_player="2"):
                 config.player1_positions = set()
                 config.player2_positions = set()
                 config.cpu_positions = set()
-                playTicTacToe(username, opponent_name)
+                return True
             else:
-                finished = True
                 graphic_board.close()
                 print("Goodbye!")
-        if finished:
-            break
+                return False
 
         # Player 2's/CPU's turn to play
         if opponent == "computer":
@@ -195,14 +187,14 @@ def playTicTacToe(first_player="1", second_player="2"):
                 config.player1_positions = set()
                 config.player2_positions = set()
                 config.cpu_positions = set()
-                playTicTacToe(username, opponent_name)
+                return True
             else:
-                finished = True
                 graphic_board.close()
                 print("Goodbye!")
-        if finished:
-            break
+                return False
 
 
 if __name__ == "__main__":
-    playTicTacToe()
+    replay = playTicTacToe()
+    while replay:
+        replay = playTicTacToe()
