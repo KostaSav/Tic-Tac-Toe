@@ -7,7 +7,7 @@ scores = []
 def load_scores(username, opponent, difficulty):
     global scores
     try:
-        with open(f"scores_{username}_{opponent}_{difficulty}.json") as f:
+        with open(f"json/scores_{username}_{opponent}_{difficulty}.json") as f:
             scores = json.load(f)
     except FileNotFoundError:
         scores = []
@@ -15,5 +15,5 @@ def load_scores(username, opponent, difficulty):
 
 # Save the game's score to a json file
 def save_scores(username, opponent, difficulty):
-    with open(f"scores_{username}_{opponent}_{difficulty}.json", "w") as f:
+    with open(f"json/scores_{username}_{opponent}_{difficulty}.json", "w") as f:
         json.dump(scores, f, indent=4)
