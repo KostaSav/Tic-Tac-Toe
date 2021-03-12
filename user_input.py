@@ -1,12 +1,12 @@
 # Player username
-def ask_user_name(username):
-    if username == "1" or username == "2":
+def ask_user_name(player):
+    if player == "1" or player == "2":
         name = input(
-            f"\n[PLAYER {username}] What is your name?\n(3-10 characters only, alphabetic or numeric): "
+            f"\n[PLAYER {player}] What is your name?\n(3-10 characters only, alphabetic or numeric): "
         )
         if not name.isalnum() or len(name) < 3 or len(name) > 10:
             print("Please respect the naming rules...")
-            name = ask_user_name()
+            name = ask_user_name(player)
         username = name
     else:
         username = username
@@ -59,7 +59,7 @@ def ask_user_move(piece):
     answer = input(f"Where do you want to place {piece}? Enter position [1-9]: ")
     if not answer.isnumeric():
         print("\nPlease enter a numeric value.")
-        answer = ask_user_move()
+        answer = ask_user_move(piece)
     return int(answer)
 
 
