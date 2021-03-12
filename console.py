@@ -18,6 +18,14 @@ def print_board():
         print()
 
 
+## Reset the board to empty
+def reset_board():
+    for line in board:
+        for i in range(len(line)):
+            if line[i] == "X" or line[i] == "O":
+                line[i] = " "
+
+
 ## Draw the played piece on the board
 def place_piece(pos, user):
     piece = " "

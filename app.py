@@ -154,6 +154,7 @@ def playTicTacToe(first_player="1", second_player="2"):
             storage.save_scores(username, opponent, difficulty)
             if user_input.replay():
                 graphic_board.close()
+                console.reset_board()
                 config.player1_positions = set()
                 config.player2_positions = set()
                 config.cpu_positions = set()
@@ -190,6 +191,7 @@ def playTicTacToe(first_player="1", second_player="2"):
             storage.save_scores(username, opponent, difficulty)
             if user_input.replay():
                 graphic_board.close()
+                console.reset_board()
                 config.player1_positions = set()
                 config.player2_positions = set()
                 config.cpu_positions = set()
