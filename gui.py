@@ -38,7 +38,7 @@ def draw_board():
 
 ## Draw a X or a O in each turn,
 ## using the board returned from draw_board()
-def draw_piece(board, pos, turn):
+def draw_piece(board, pos, piece):
     if pos == 1:
         center = Point((margin + size / 3) / 2, (margin + size / 3) / 2)
     elif pos == 2:
@@ -60,12 +60,12 @@ def draw_piece(board, pos, turn):
             (size - margin + 2 * size / 3) / 2, (size - margin + 2 * size / 3) / 2
         )
 
-    if turn == "cpu" or turn == "player_2":
+    if piece == "O":
         nought = Circle(center, margin)
         nought.setOutline("blue")
         nought.setWidth(0.2 * margin)
         nought.draw(board)
-    elif turn == "player_1":
+    elif piece == "X":
         line1 = Line(
             Point(center.getX() - margin, center.getY() - margin),
             Point(center.getX() + margin, center.getY() + margin),

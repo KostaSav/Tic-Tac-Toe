@@ -27,17 +27,11 @@ def reset_board():
 
 
 ## Draw the played piece on the board
-def place_piece(pos, user):
-    piece = " "
-    if user == "player_1":
-        piece = "X"
+def place_piece(pos, first_player_turn, piece):
+    if first_player_turn:
         config.player1_positions.add(pos)
-    elif user == "player_2":
-        piece = "O"
+    else:
         config.player2_positions.add(pos)
-    elif user == "cpu":
-        piece = "O"
-        config.cpu_positions.add(pos)
 
     if pos == 1:
         board[0][0] = piece

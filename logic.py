@@ -10,11 +10,7 @@ def is_valid_pos(pos):
     if math.isnan(pos):
         print("\nPlease input a valid number.")
         return False
-    elif (
-        pos in config.player1_positions
-        or pos in config.player2_positions
-        or pos in config.cpu_positions
-    ):
+    elif pos in config.player1_positions or pos in config.player2_positions:
         print("Position taken.")
         return False
     elif pos < 1 or pos > 9:
@@ -40,6 +36,8 @@ def check_win(username, opponent_name):
 
     for win in wins:
         if set(win).issubset(config.player1_positions):
+            print()
+            print(f"{username} wins!")
             storage.scores.append(
                 {
                     "timestamp": str(datetime.datetime.now()),
@@ -48,9 +46,9 @@ def check_win(username, opponent_name):
                 }
             )
             return True
-        elif set(win).issubset(config.player2_positions) or set(win).issubset(
-            config.cpu_positions
-        ):
+        elif set(win).issubset(config.player2_positions):
+            print()
+            print(f"{opponent_name} wins!")
             storage.scores.append(
                 {
                     "timestamp": str(datetime.datetime.now()),
@@ -60,10 +58,7 @@ def check_win(username, opponent_name):
             )
             return True
 
-    if (
-        len(config.player1_positions) + len(config.cpu_positions) == 9
-        or len(config.player1_positions) + len(config.player2_positions) == 9
-    ):
+    if len(config.player1_positions) + len(config.player2_positions) == 9:
         print()
         print("It's a tie")
         storage.scores.append(

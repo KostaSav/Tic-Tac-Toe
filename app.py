@@ -106,7 +106,7 @@ def play_cpu_turn(difficulty):
                 return random.choice(empty_squares)
 
     else:
-        # TODO
+        # TODO add hard mode
         pass
 
 
@@ -125,68 +125,35 @@ def playTicTacToe(first_player="1", second_player="2"):
     print()
     console.print_board()
     graphic_board = gui.draw_board()
+    first_player_turn = False
+    first_player_piece = user_input.choose_piece()
+    second_player_piece = "O" if first_player_piece == "X" else "X"
 
     while True:
+        first_player_turn = not first_player_turn
+        piece = first_player_piece if first_player_turn else second_player_piece
 
-        # Player 1's turn to play
-        if opponent == "computer":
-            print("\nIt's your turn!")
-        else:
-            print(f"\nIt's {username}'s turn!")
-        user_pos = user_input.ask_user_move("X")
-        while not logic.is_valid_pos(user_pos):
-            user_pos = user_input.ask_user_move("X")
+        print(f"\nIt's {username if first_player_turn else opponent_name}'s turn!")
 
-        console.place_piece(user_pos, "player_1")
-        gui.draw_piece(graphic_board, user_pos, "player_1")
-        console.print_board()
-        if logic.check_win(username, opponent_name):
-            if opponent == "computer":
-                print("Congratulations, you won!")
-            else:
-                print(f"{username} wins!")
-            storage.save_scores(username, opponent, difficulty)
-            if user_input.replay():
-                graphic_board.close()
-                console.reset_board()
-                config.player1_positions = set()
-                config.player2_positions = set()
-                config.cpu_positions = set()
-                return True
-            else:
-                graphic_board.close()
-                print("Goodbye!")
-                return False
-
-        # Player 2's/CPU's turn to play
-        if opponent == "computer":
+        if not first_player_turn and opponent == "computer":
             print("CPU is playing...")
             time.sleep(1)
-            cpu_pos = play_cpu_turn(difficulty)
-            console.place_piece(cpu_pos, "cpu")
-            gui.draw_piece(graphic_board, cpu_pos, "cpu")
-            console.print_board()
+            pos = play_cpu_turn(difficulty)
         else:
-            print(f"\nIt's {opponent_name}'s turn!")
-            user_pos = user_input.ask_user_move("O")
-            while not logic.is_valid_pos(user_pos):
-                user_pos = user_input.ask_user_move("O")
-            console.place_piece(user_pos, "player_2")
-            gui.draw_piece(graphic_board, user_pos, "player_2")
-            console.print_board()
+            pos = user_input.ask_user_move(piece)
+            while not logic.is_valid_pos(pos):
+                pos = user_input.ask_user_move(piece)
 
+        console.place_piece(pos, first_player_turn, piece)
+        gui.draw_piece(graphic_board, pos, piece)
+        console.print_board()
         if logic.check_win(username, opponent_name):
-            if opponent == "computer":
-                print("Better luck next time...")
-            else:
-                print(f"{opponent_name} wins!")
             storage.save_scores(username, opponent, difficulty)
             if user_input.replay():
                 graphic_board.close()
                 console.reset_board()
                 config.player1_positions = set()
                 config.player2_positions = set()
-                config.cpu_positions = set()
                 return True
             else:
                 graphic_board.close()

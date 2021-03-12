@@ -54,6 +54,15 @@ def init_game():
     return opponent, difficulty
 
 
+## Choose to play with X or O
+def choose_piece():
+    piece_choice = input("Do you want to play with 'X' or 'O'? ")
+    if not piece_choice.lower() == "x" and not piece_choice.lower() == "o":
+        print("Please choose a valid piece...")
+        piece_choice = choose_piece()
+    return piece_choice.upper()
+
+
 ## Ask the user to play and check if his answer is numeric
 def ask_user_move(piece):
     answer = input(f"Where do you want to place {piece}? Enter position [1-9]: ")
