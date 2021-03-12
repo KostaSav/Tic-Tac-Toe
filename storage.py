@@ -23,4 +23,4 @@ def save_scores(username, opponent, difficulty):
         base = Path("json")
         jsonpath = base / (f"scores_{username}_{opponent}_{difficulty}.json")
         base.mkdir(exist_ok=True)
-        jsonpath.write_text(json.dump(scores, indent=4))
+        jsonpath.write_text(json.dumps(scores, indent=4))
