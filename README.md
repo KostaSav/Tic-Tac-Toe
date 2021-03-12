@@ -20,7 +20,8 @@ pip install graphics.py
 2. [x] add graphics
 3. [x] save scores using json
 4. [x] implement PVP mode
-5. [ ] add mouse interaction
-6. [ ] implement "hard" mode
-7. [ ] eliminate global variables
-8. [ ] introduce classes
+5. [x] give user choice between X and O
+6. [ ] add mouse interaction
+7. [ ] implement "hard" mode
+8. [ ] eliminate global variables
+9. [ ] introduce classes
