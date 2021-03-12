@@ -1,5 +1,6 @@
 ########## Imports ##########
 import json
+from pathlib import Path
 
 scores = []
 
@@ -15,5 +16,11 @@ def load_scores(username, opponent, difficulty):
 
 # Save the game's score to a json file
 def save_scores(username, opponent, difficulty):
-    with open(f"json/scores_{username}_{opponent}_{difficulty}.json", "w") as f:
-        json.dump(scores, f, indent=4)
+    try:
+        with open(f"json/scores_{username}_{opponent}_{difficulty}.json", "w") as f:
+            json.dump(scores, f, indent=4)
+    except FileNotFoundError:
+        base = Path("json")
+        jsonpath = base / (f"scores_{username}_{opponent}_{difficulty}.json")
+        base.mkdir(exist_ok=True)
+        jsonpath.write_text(json.dump(scores, indent=4))
